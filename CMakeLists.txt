@@ -16,7 +16,7 @@ endif()
 # We want to have access to protobuf_generate_cpp and other FindProtobuf features.
 # However, if ProtobufConfig is used instead, there is a CMake option that controls
 # this, which defaults to OFF. We need to force this option to ON instead.
-set(protobuf_MODULE_COMPATIBLE ON CACHE "" INTERNAL FORCE)
+set(protobuf_MODULE_COMPATIBLE ON CACHE INTERNAL "" FORCE)
 find_package(Protobuf 3.0.0 REQUIRED)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) #Required if a patch to libArcus needs to be made via templates.
@@ -24,16 +24,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON) #Required if a patch to libArcus needs t
 if(BUILD_PYTHON)
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-    # FIXME: Remove the code for CMake <3.12 once we have switched over completely.
-    # FindPython3 is a new module since CMake 3.12. It deprecates FindPythonInterp and FindPythonLibs.
-    if(${CMAKE_VERSION} VERSION_LESS 3.12)
-        # Use FindPythonInterp and FindPythonLibs for CMake <3.12
-        find_package(PythonInterp 3.4 REQUIRED)
-        find_package(PythonLibs 3.4 REQUIRED)
-    else()
-        # Use FindPython3 for CMake >=3.12
-        find_package(Python3 3.4 REQUIRED COMPONENTS Interpreter Development)
-    endif()
+    # FIXME: Use FindPython3 to find Python, new in CMake 3.12.
+    # However currently on our CI server it finds the wrong Python version and then doesn't find the headers.
+    find_package(PythonInterp 3.4 REQUIRED)
+    find_package(PythonLibs 3.4 REQUIRED)
 
     find_package(SIP REQUIRED)
     if(NOT DEFINED LIB_SUFFIX)
